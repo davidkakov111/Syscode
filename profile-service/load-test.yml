@@ -1,0 +1,16 @@
+config:
+  target: 'http://syscode:3000'
+  phases:
+    - duration: 100
+      arrivalRate: 100
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - flow:
+      - post:
+          url: "/create"
+          json:
+            name: "John Cena"
+            email: "johncena@gmail.com"

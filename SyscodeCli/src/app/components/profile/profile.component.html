@@ -1,0 +1,75 @@
+<div class="profile-wrapper">
+  <h1>Profile Service</h1>
+
+  <mat-card>
+    <form [formGroup]="studentForm" (ngSubmit)="createStudent()">
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" required />
+        <mat-error *ngIf="studentForm.controls['name'].hasError('required')"> Name is required </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" required />
+        <mat-error *ngIf="studentForm.controls['email'].hasError('required')"> Email is required </mat-error>
+        <mat-error *ngIf="studentForm.controls['email'].hasError('email')"> Invalid email address </mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="studentForm.invalid">Create Student</button>
+    </form>
+  </mat-card>
+
+  <!-- Students Table -->
+  <div class="mat-elevation-z8">  
+    <div class="overflow-auto">
+      <table mat-table [dataSource]="students" matSort>
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+          <td mat-cell *matCellDef="let student">{{ student.id }}</td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let student">
+            <input *ngIf="student.isEditing" [(ngModel)]="student.name" matInput />
+            <span *ngIf="!student.isEditing">{{ student.name }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let student">
+            <input *ngIf="student.isEditing" [(ngModel)]="student.email" matInput />
+            <span *ngIf="!student.isEditing">{{ student.email }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let student">
+            <button *ngIf="!student.isEditing" mat-icon-button (click)="editStudent(student)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button *ngIf="student.isEditing" mat-icon-button (click)="updateStudent(student)">
+              <mat-icon>save</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteStudent(student.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row class="table-row" *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+    
+    <!-- Pagination Controls -->
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

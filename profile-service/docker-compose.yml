@@ -1,0 +1,83 @@
+services:
+  postgres:
+    image: postgres:16.0
+    ports:
+      - "5433:5432"
+    restart: always
+    networks:
+      - syscode-network-1
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      retries: 5
+      timeout: 5s
+
+  liquibase:
+    container_name: liquibase
+    image: liquibase/liquibase
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - syscode-network-1
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./src/main/resources/db/changelog/db.changelog-master.xml:/liquibase/db.changelog-master.xml
+    command: liquibase --url=jdbc:postgresql://postgres:5432/${POSTGRES_DB} --driver=org.postgresql.Driver --username=${POSTGRES_USER} --password=${POSTGRES_PASSWORD} --changeLogFile=db.changelog-master.xml update
+
+  syscode:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
+    networks:
+      - syscode-network-1
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      syscode:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - syscode-network-1
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+networks:
+  syscode-network-1:
+    driver: bridge
+
+volumes:
+  pgdata:

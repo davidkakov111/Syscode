@@ -1,0 +1,12 @@
+<h1 class="title">Address Service</h1>
+
+<!-- Material button with primary color and hover effect -->
+<button mat-raised-button color="primary" class="load-button" (click)="loadAddress()">
+  Load Address
+</button>
+
+<!-- Display the address when available -->
+<div *ngIf="address" class="address-container" [class.pulse]="isUpdated">
+  <p><strong>Address ID:</strong> {{ address.id }}</p>
+  <p><strong>Address:</strong> {{ address.address }}</p>
+</div>

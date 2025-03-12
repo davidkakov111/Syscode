@@ -1,0 +1,34 @@
+services:
+  syscode-a:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    restart: always
+    networks:
+      - syscode-network-2
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      syscode-a:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - syscode-network-2
+
+networks:
+  syscode-network-2:
+    driver: bridge
+
+volumes:
+  pgdata:

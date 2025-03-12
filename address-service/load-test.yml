@@ -1,0 +1,13 @@
+config:
+  target: 'http://syscode-a:3001'
+  phases:
+    - duration: 100
+      arrivalRate: 100
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - flow:
+      - get:
+          url: "/address"
