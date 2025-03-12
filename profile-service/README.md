@@ -6,6 +6,8 @@
 
 ## Getting Started
 
+* First create your .env file in the project root based on .env.example.
+
 * **Start the project:**
     ```bash
     docker compose up
