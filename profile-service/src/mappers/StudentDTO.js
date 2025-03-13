@@ -1,8 +1,8 @@
 
 // Student Data Transfer Object
 class StudentDTO {
-  constructor(nev, email) {
-    this.nev = nev;
+  constructor(name, email) {
+    this.name = name;
     this.email = email;
   }
 }
