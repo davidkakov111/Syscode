@@ -1,7 +1,10 @@
 const request = require('supertest');
 const { app, server } = require('../app');
+const sequelize = require('../config/database');
 
-afterAll(() => {
+afterAll(async () => {
+  // Close the database connection after tests
+  await sequelize.close();
   server.close();
 });
 
