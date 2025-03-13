@@ -1,7 +1,35 @@
 mat-toolbar {
+    display: flex;
     justify-content: center;
 }
+
+.toolbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    width: 100%;
+    max-width: 1240px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+}
+
 button {
     margin: 0px 20px;
     font-size: large;
+}
+
+.nav-buttons button:hover {
+    color: var(--hover-blue);
+}
+
+.nav-buttons .hover-blue {
+    color: var(--hover-blue);
 }

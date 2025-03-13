@@ -1,6 +1,16 @@
 <mat-toolbar color="primary">
-    <button mat-button routerLink="/">Profile Service</button>
-    <button mat-button routerLink="/address">Address Service</button>
+    <div class="mw-1240 toolbar-content">
+        <span class="logo">
+            <a routerLink="/">
+                <img src="/images/syscode-logo.png" loading="lazy" alt="SysCode" title="SysCode">
+            </a>
+        </span>
+        
+        <span class="nav-buttons">
+            <button mat-button routerLink="/" [class.hover-blue]="isActive('/')">Profile Service</button>
+            <button mat-button routerLink="/address" [class.hover-blue]="isActive('/address')">Address Service</button>
+        </span>
+    </div>
 </mat-toolbar>
 
 <router-outlet />
