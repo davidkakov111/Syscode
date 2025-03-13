@@ -17,12 +17,12 @@
 
 * **Integration & Unit Tests:**
     ```bash
-    docker compose run --rm test npm test
+    docker compose run --rm test-a npm test
     ```
 
 * **Load Test:**
     ```bash
-    docker compose run --rm test npm run load-test
+    docker compose run --rm test-a npm run load-test
     ```
 
 ## API Endpoints

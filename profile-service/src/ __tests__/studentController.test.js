@@ -1,6 +1,7 @@
 const { getAllStudents, createStudent, updateStudent, deleteStudent } = require('../controllers/studentController');
 const { mockRequest, mockResponse } = require('jest-mock-req-res');
 const Student = require('../models/Student');
+const StudentMapper = require('../mappers/StudentMapper');
 
 jest.mock('../models/Student'); // Mock the entire model
 
@@ -29,10 +30,12 @@ describe('Student Controller', () => {
             body: { name: 'John Doe', email: 'johndoe@example.com' },
         });
         const res = mockResponse();
+        res.json = jest.fn(); 
 
         const newStudent = { id: '1255e52c-9dab-4791-b8b7-35b3ea8ab69e', name: 'John Doe', email: 'johndoe@example.com' };
-        Student.create.mockResolvedValue(newStudent);
-
+        const studentMock = { save: jest.fn().mockResolvedValue(newStudent) };
+        StudentMapper.toEntity = jest.fn().mockReturnValue(studentMock);
+      
         await createStudent(req, res);
 
         expect(res.status).toHaveBeenCalledWith(200);

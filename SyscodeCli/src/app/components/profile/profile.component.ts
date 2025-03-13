@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ServerService, Student } from '../../services/server.service';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,7 +32,7 @@ import { MatDialog } from '@angular/material/dialog';
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })
-export class ProfileComponent implements OnInit, AfterViewInit {
+export class ProfileComponent implements OnInit {
   studentForm!: FormGroup;
   students = new MatTableDataSource<Student>([]);
   displayedColumns: string[] = ['id', 'name', 'email', 'actions'];
@@ -56,19 +56,17 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     // On init load the students
     this.loadStudents();
   }
-  
-  ngAfterViewInit() {
-    this.students.paginator = this.paginator;
-    this.students.sort = this.sort;
-  }
 
   // Load students from profile service
   async loadStudents() {
     const students = await this.serverSrv.getStudents();
     if (Array.isArray(students)) {
       this.students.data = students;
-      this.students.paginator = this.paginator;
-      this.students.sort = this.sort;
+      
+      setTimeout(() => {
+        this.students.paginator = this.paginator;
+        this.students.sort = this.sort;
+      });
     } else {
       console.error(`Failed to load students: ${students}`);
     }
