@@ -38,10 +38,10 @@ app.get('/address', authenticate, getAddress);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const PORT = 3001;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Address server is running on http://localhost:${PORT}`);
   console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
 });
 
 // Export app for testing
-module.exports = app;
+module.exports = { app, server };

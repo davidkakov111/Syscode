@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../app');
+const { app, server } = require('../app');
 const Student = require('../models/Student');
 const sequelize = require('../config/database');
 
@@ -11,6 +11,7 @@ beforeAll(async () => {
 afterAll(async () => {
   // Close the database connection after tests
   await sequelize.close();
+  server.close();
 });
 
 // Integration tests for the routes
