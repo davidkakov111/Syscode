@@ -1,0 +1,141 @@
+openapi: 3.0.0
+info:
+  title: Profile Service API
+  version: 1.0.0
+  description: API for managing student profiles.
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /:
+    get:
+      summary: Profile Service Home
+      description: Returns a simple message indicating that the service is running.
+      responses:
+        '200':
+          description: Service running message
+          content:
+            text/plain:
+              schema:
+                type: string
+  
+  /read:
+    get:
+      summary: Retrieve all students
+      description: Fetches all student profiles from the database.
+      responses:
+        '200':
+          description: A list of students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+        '500':
+          description: Server error
+
+  /create:
+    post:
+      summary: Create a new student
+      description: Adds a new student profile to the database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentInput'
+      responses:
+        '200':
+          description: Successfully created student
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '400':
+          description: Validation error
+        '500':
+          description: Server error
+
+  /update/{id}:
+    put:
+      summary: Update an existing student
+      description: Updates an existing student's information.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentInput'
+      responses:
+        '200':
+          description: Successfully updated student
+        '400':
+          description: Validation error
+        '404':
+          description: Student not found
+        '500':
+          description: Server error
+
+  /delete/{id}:
+    delete:
+      summary: Delete a student
+      description: Deletes a student profile from the database.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Student deleted successfully
+        '404':
+          description: Student not found
+        '500':
+          description: Server error
+
+  /api-docs:
+    get:
+      summary: OpenAPI Documentation
+      description: Returns the Swagger UI documentation for the API.
+      responses:
+        '200':
+          description: Swagger UI HTML page
+
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the student.
+        name:
+          type: string
+          description: The student's name.
+        email:
+          type: string
+          format: email
+          description: The student's email address.
+
+    StudentInput:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The student's name.
+        email:
+          type: string
+          format: email
+          description: The student's email address.

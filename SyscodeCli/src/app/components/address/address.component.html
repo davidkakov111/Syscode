@@ -1,27 +1,30 @@
-<h1 class="title">Address Service</h1>
+<div class="address-wrapper">
+  <h1 class="title">Address Service</h1>
+  <p>For more details, check the <a href="http://localhost:3001/api-docs" target="_blank">OpenAPI 3.0 Documentation</a>.</p>
+    
+  <!-- Form for basic auth credentials -->
+  <mat-card>
+    <form [formGroup]="addressForm" (ngSubmit)="loadAddress()">
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" required />
+        <mat-error *ngIf="addressForm.controls['name'].hasError('required')"> Name is required </mat-error>
+      </mat-form-field>
 
-<!-- Form for basic auth credentials -->
-<mat-card>
-  <form [formGroup]="addressForm" (ngSubmit)="loadAddress()">
-    <mat-form-field appearance="fill">
-      <mat-label>Name</mat-label>
-      <input matInput formControlName="name" required />
-      <mat-error *ngIf="addressForm.controls['name'].hasError('required')"> Name is required </mat-error>
-    </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" type="password" required />
+        <mat-error *ngIf="addressForm.controls['password'].hasError('required')">Password is required</mat-error>
+        <mat-error *ngIf="addressForm.controls['password'].hasError('minlength')">Password must be at least 8 characters long</mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Password</mat-label>
-      <input matInput formControlName="password" type="password" required />
-      <mat-error *ngIf="addressForm.controls['password'].hasError('required')">Password is required</mat-error>
-      <mat-error *ngIf="addressForm.controls['password'].hasError('minlength')">Password must be at least 8 characters long</mat-error>
-    </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="addressForm.invalid">Load Address</button>
+    </form>
+  </mat-card>
 
-    <button mat-raised-button color="primary" type="submit" [disabled]="addressForm.invalid">Load Address</button>
-  </form>
-</mat-card>
-
-<!-- Display the address when available -->
-<div *ngIf="address" class="address-container" [class.pulse]="isUpdated">
-  <p><strong>Address ID:</strong> {{ address.id }}</p>
-  <p><strong>Address:</strong> {{ address.address }}</p>
+  <!-- Display the address when available -->
+  <div *ngIf="address" class="address-container" [class.pulse]="isUpdated">
+    <p><strong>Address ID:</strong> {{ address.id }}</p>
+    <p><strong>Address:</strong> {{ address.address }}</p>
+  </div>
 </div>

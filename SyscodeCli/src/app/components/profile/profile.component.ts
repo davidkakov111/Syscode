@@ -109,6 +109,14 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         this.students.sort = this.sort;
       } else {
         console.error(`Failed to update student: ${JSON.stringify(updatedStudent)}`);
+
+        if (updatedStudent === "The email doesn't seem valid") {
+          this.openConfirmDialog(updatedStudent);
+        } else if (updatedStudent === "Failed to connect to the server.") {
+          this.openConfirmDialog("Failed to connect to the Profile server.");
+        } else {
+          this.openConfirmDialog('Failed to update student');
+        }
       }
     });
   }
@@ -116,7 +124,11 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   // Delete a student from profile service
   deleteStudent(id: string) {
     this.serverSrv.deleteStudent(id).subscribe((response) => {
-      if (response !== 'Failed to delete student.') {
+      if (response === 'Failed to connect to the server.') {
+        this.openConfirmDialog("Failed to connect to the Profile server.");
+      } else if (response === 'Failed to delete student.') {
+        this.openConfirmDialog(response);
+      } else {
         this.students.data = this.students.data.filter((s) => s.id !== id);
         this.students.paginator = this.paginator;
         this.students.sort = this.sort;

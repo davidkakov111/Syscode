@@ -36,3 +36,9 @@
 * **Random Address Endpoint:**
     * `GET /address`
     * Description: Returns a randomly generated address with UUID type id. 
+
+* **OpenAPI Documentation Endpoint:**
+    * `GET /api-docs`
+    * Description: Serves the Swagger UI for the API documentation.
+
+## For more information, check out the OpenAPI Documentation Endpoint.

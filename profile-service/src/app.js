@@ -4,6 +4,11 @@ const dotenv = require('dotenv');
 const sequelize = require('./config/database');
 const cors = require("cors");
 const { getAllStudents, createStudent, updateStudent, deleteStudent } = require('./controllers/studentController');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const path = require('path');
+
+const swaggerDocument = YAML.load(path.join(__dirname, 'openapi.yaml'));
 
 dotenv.config();
 
@@ -37,9 +42,13 @@ app.put('/update/:id', updateStudent);
 // Delete endpoint (Törlés)
 app.delete('/delete/:id', deleteStudent);
 
+// OpenAPI 3.0 endpoint
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Profile server running on port ${PORT}`);
+  console.log(`Profile server is running on http://localhost:${PORT}`);
+  console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
 });
 
 // Export app for testing

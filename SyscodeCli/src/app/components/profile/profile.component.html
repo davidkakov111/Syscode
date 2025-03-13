@@ -1,6 +1,7 @@
 <div class="profile-wrapper">
   <h1>Profile Service</h1>
-
+  <p>For more details, check the <a href="http://localhost:3000/api-docs" target="_blank">OpenAPI 3.0 Documentation</a>.</p>
+  
   <mat-card>
     <form [formGroup]="studentForm" (ngSubmit)="createStudent()">
       <mat-form-field appearance="fill">
@@ -21,7 +22,7 @@
   </mat-card>
 
   <!-- Students Table -->
-  <div class="mat-elevation-z8">  
+  <div *ngIf="students.data.length" class="mat-elevation-z8">  
     <div class="overflow-auto">
       <table mat-table [dataSource]="students" matSort>
         <!-- ID Column -->

@@ -49,4 +49,10 @@
 
 * **Delete Endpoint (Törlés):**
     * `DELETE /delete/:id`
-    * Description: Deletes the student with the given `id`.
+    * Description: Deletes the student with the given `id`. 
+
+* **OpenAPI Documentation Endpoint:**
+    * `GET /api-docs`
+    * Description: Serves the Swagger UI for the API documentation.
+
+## For more information, check out the OpenAPI Documentation Endpoint.

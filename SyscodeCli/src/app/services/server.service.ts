@@ -44,22 +44,34 @@ export class ServerService {
 
   // Update student in profile service
   updateStudent(student: Student): Observable<Student | string> {
-    try {
-      return this.http.put<Student>(this.profileServerEndpoint+'/update/'+student.id, {name: student.name, email: student.email});
-    } catch (error) {
-      console.error('Student update error: ', error);
-      return of('Failed to update student.');
-    }  
+    return this.http.put<Student>(this.profileServerEndpoint + '/update/'+student.id, {name: student.name, email: student.email}).pipe(
+      catchError((error: any) => {
+        console.error('Student update error: ', error);
+
+        if (error.status === 400) {
+          return of("The email doesn't seem valid");
+        } else if (error.name === 'HttpErrorResponse' && error.error instanceof TypeError && error.error.message === 'Failed to fetch') {
+          return of('Failed to connect to the server.');
+        } else {
+          return of('Failed to update student.');
+        }
+      })
+    );
   }
 
   // Delete student from profile service
   deleteStudent(id: string): Observable<string> {
-    try {
-      return this.http.delete<string>(this.profileServerEndpoint+'/delete/'+id);
-    } catch (error) {
-      console.error('Student delete error: ', error);
-      return of('Failed to delete student.');
-    }  
+    return this.http.delete<string>(this.profileServerEndpoint + '/delete/'+id).pipe(
+      catchError((error: any) => {
+        console.error('Student delete error: ', error);
+
+        if (error.name === 'HttpErrorResponse' && error.error instanceof TypeError && error.error.message === 'Failed to fetch') {
+          return of('Failed to connect to the server.');
+        } else {
+          return of('Failed to delete student.');
+        }
+      })
+    );
   }
 
   // Get address from address service
