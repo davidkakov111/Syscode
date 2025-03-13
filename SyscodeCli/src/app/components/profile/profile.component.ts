@@ -11,6 +11,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { ConfirmDialogComponent } from '../../dialogs/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-profile',
@@ -21,7 +23,6 @@ import { MatSort } from '@angular/material/sort';
     MatFormFieldModule,
     MatCardModule,
     MatToolbarModule,
-    MatButtonModule,
     ReactiveFormsModule,
     MatInputModule,
     FormsModule,
@@ -42,6 +43,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   constructor(
     private serverSrv: ServerService, 
     private fb: FormBuilder,
+    private dialog: MatDialog,
   ) {
     // Initialize the form to create student
     this.studentForm = this.fb.group({
@@ -85,6 +87,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         this.students.sort = this.sort;
       } else {
         console.error(`Failed to create student: ${JSON.stringify(student)}`);
+        if (student === "The email doesn't seem valid") {
+          this.openConfirmDialog(student);
+        } else if (student === "Failed to connect to the server.") {
+          this.openConfirmDialog("Failed to connect to the Profile server.");
+        } else {
+          this.openConfirmDialog('Failed to create student');
+        }
       }
     });
   }
@@ -118,5 +127,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   // Enable editing for a student
   editStudent(student: Student) {
     student.isEditing = true;
+  }
+
+  // Open confirmation dialog with a message
+  openConfirmDialog(message: string): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      width: '90%',
+      data: { message }
+    });
   }
 }

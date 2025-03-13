@@ -1,6 +1,7 @@
 services:
   # Postgres db service 
   postgres:
+    container_name: postgres
     image: postgres:16.0
     ports:
       - "5434:5432"
@@ -20,8 +21,8 @@ services:
       timeout: 5s
 
   # Liquibase service to set up the db 
-  liquibase:
-    container_name: liquibase
+  liquibase-a:
+    container_name: liquibase-a
     image: liquibase/liquibase
     restart: "no"
     depends_on:
@@ -50,12 +51,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      liquibase:
+      liquibase-a:
         condition: service_completed_successfully
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      AUTH_NAME: ${AUTH_NAME}
+      AUTH_PASSWORD: ${AUTH_PASSWORD}
+      DISABLE_AUTH: ${DISABLE_AUTH}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/"]
       interval: 10s
@@ -79,9 +83,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      AUTH_NAME: ${AUTH_NAME}
+      AUTH_PASSWORD: ${AUTH_PASSWORD}
+      DISABLE_AUTH: ${DISABLE_AUTH}
 
   # Test service
-  test:
+  test-a:
     build:
       context: .
       dockerfile: Dockerfile
@@ -97,6 +104,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      AUTH_NAME: ${AUTH_NAME}
+      AUTH_PASSWORD: ${AUTH_PASSWORD}
+      DISABLE_AUTH: true
 
 networks:
   syscode-network-2:

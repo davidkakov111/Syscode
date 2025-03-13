@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const cors = require("cors");
 const sequelize = require('./config/database');
 const { getAddress } = require('./controllers/AddressController');
+const authenticate = require('./middleware');
 
 dotenv.config();
 
@@ -25,8 +26,8 @@ app.get('/', (req, res) => {
   res.send('Address Service');
 });
 
-// Endpoint to return random address
-app.get('/address', getAddress);
+// Endpoint to return random address with authentication middleware
+app.get('/address', authenticate, getAddress);
 
 const PORT = 3001;
 app.listen(PORT, () => {

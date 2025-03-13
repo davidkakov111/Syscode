@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { firstValueFrom, Observable, of } from 'rxjs';
+import { catchError, firstValueFrom, Observable, of } from 'rxjs';
 
 export interface Student { id: string, name: string, email: string, isEditing?: boolean };
 
@@ -26,13 +26,20 @@ export class ServerService {
   }
 
   // Create student in profile service
-  createStudent(name: string, email: string): Observable<Student[] | string> {
-    try {
-      return this.http.post<Student[]>(this.profileServerEndpoint+'/create', {name, email});
-    } catch (error) {
-      console.error('Error creating student: ', error);
-      return of('Failed to create student.');
-    }  
+  createStudent(name: string, email: string): Observable < Student | string > {
+    return this.http.post<Student>(this.profileServerEndpoint + '/create', {name, email}).pipe(
+      catchError((error: any) => {
+        console.error('Error creating student: ', error);
+
+        if (error.status === 400) {
+          return of("The email doesn't seem valid");
+        } else if (error.name === 'HttpErrorResponse' && error.error instanceof TypeError && error.error.message === 'Failed to fetch') {
+          return of('Failed to connect to the server.');
+        } else {
+          return of('Failed to create student.');
+        }
+      })
+    );
   }
 
   // Update student in profile service
@@ -56,12 +63,21 @@ export class ServerService {
   }
 
   // Get address from address service
-  async getAddress(): Promise<Address | string> {
-    try {
-      return await firstValueFrom(this.http.get<Address>(this.addressServerEndpoint + '/address'));
-    } catch (error) {
-      console.error('Error fetching address: ', error);
-      return 'Failed to fetch address.';
-    }  
+  getAddress(name: string, pass: string): Observable<Address | string> {
+    // Create the Basic Authentication header
+    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(`${name}:${pass}`)});
+    return this.http.get<Address>(this.addressServerEndpoint + '/address', { headers }).pipe(
+      catchError((error: any) => {
+        console.error('Error fetching address: ', error);
+
+        if (error.status === 401) {
+          return of("Authentication failed");
+        } else if (error.name === 'HttpErrorResponse' && error.error instanceof TypeError && error.error.message === 'Failed to fetch') {
+          return of('Failed to connect to the server.');
+        } else {
+          return of('Failed to fetch address.');
+        }
+      })
+    );
   }
 }

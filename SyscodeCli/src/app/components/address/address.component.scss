@@ -5,22 +5,23 @@
     font-weight: bold;
 }
 
-.load-button {
-    background-color: #1976d2;
-    color: white;
-    margin: 20px auto;
-    display: block;
-    font-size: large;
-    padding: 10px 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease-in-out;
+mat-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 20px;
+    margin: 0 auto;
 }
-
-.load-button:hover {
-    background-color: #269ad8;
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
-    transform: scale(1.1);
+mat-form-field {
+    width: 100%;
+}
+mat-card button {
+    margin-top: 10px;
+    width: 100%;
+    font-size: larger;
 }
 
 .address-container {
