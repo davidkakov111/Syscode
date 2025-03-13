@@ -24,6 +24,3 @@ EXPOSE 3000
 
 # Start the app
 CMD ["node", "src/app.js"]
-
-# To remove containers, volumes, etc., run the following command:
-# sudo docker compose down --volumes --rmi all
