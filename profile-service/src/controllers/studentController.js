@@ -1,4 +1,5 @@
 const Student = require('../models/Student');
+const StudentMapper = require('../mappers/StudentMapper');
 
 // Read (Listazas)
 const getAllStudents = async (req, res) => {
@@ -13,11 +14,13 @@ const getAllStudents = async (req, res) => {
 
 // Create (Új felvitel)
 const createStudent = async (req, res) => {
-  const { name, email } = req.body;
-  if (!name || !email) return res.status(400).json({ error: 'Name and email are required' });
+  if (!req.body.name || !req.body.email) return res.status(400).json({ error: 'Name and email are required' });
   
   try {
-    const newStudent = await Student.create({ name, email });
+    // Use Mapper 
+    const student = StudentMapper.toEntity(req.body);
+    const newStudent = await student.save();
+
     return res.status(200).json(newStudent);
   } catch (error) {
     // In case of invalid email
@@ -33,7 +36,7 @@ const createStudent = async (req, res) => {
 
 // Update (Módosítás)
 const updateStudent = async (req, res) => {
-  const { id } = req.params; // UUID from the route parameters
+  const { id } = req.params;
   const { name, email } = req.body;
 
   if (!id || (!name && !email)) return res.status(400).json({ error: 'At least the id and one of name or email is required' });
