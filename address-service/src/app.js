@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const cors = require("cors");
+const sequelize = require('./config/database');
 const { getAddress } = require('./controllers/AddressController');
 
 dotenv.config();
@@ -15,6 +16,10 @@ app.use(
     ]
   })
 );
+
+sequelize.authenticate()
+  .then(() => console.log('Database connected...'))
+  .catch(err => console.error('Database connection error:', err));
 
 app.get('/', (req, res) => {
   res.send('Address Service');

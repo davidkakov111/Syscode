@@ -1,4 +1,43 @@
 services:
+  # Postgres db service 
+  postgres:
+    image: postgres:16.0
+    ports:
+      - "5434:5432"
+    restart: always
+    networks:
+      - syscode-network-2
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      retries: 5
+      timeout: 5s
+
+  # Liquibase service to set up the db 
+  liquibase:
+    container_name: liquibase
+    image: liquibase/liquibase
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - syscode-network-2
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./src/main/resources/db/changelog/db.changelog-master.xml:/liquibase/db.changelog-master.xml
+    command: liquibase --url=jdbc:postgresql://postgres:5432/${POSTGRES_DB} --driver=org.postgresql.Driver --username=${POSTGRES_USER} --password=${POSTGRES_PASSWORD} --changeLogFile=db.changelog-master.xml update
+
+  # Application service
   syscode-a:
     build:
       context: .
@@ -8,6 +47,15 @@ services:
     restart: always
     networks:
       - syscode-network-2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/"]
       interval: 10s
@@ -15,6 +63,24 @@ services:
       start_period: 30s
       timeout: 10s
 
+  # Service to save random address data to the db by default
+  random-data:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: node src/insertRandomData.js
+    depends_on:
+      syscode-a:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - syscode-network-2
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  # Test service
   test:
     build:
       context: .
@@ -22,9 +88,15 @@ services:
     depends_on:
       syscode-a:
         condition: service_healthy
+      random-data:
+        condition: service_completed_successfully
     restart: "no"
     networks:
       - syscode-network-2
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
 
 networks:
   syscode-network-2:

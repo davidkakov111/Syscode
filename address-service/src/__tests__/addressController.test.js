@@ -1,29 +1,39 @@
 const { getAddress } = require('../controllers/AddressController');
+const { mockRequest, mockResponse } = require('jest-mock-req-res');
 const Address = require('../models/Address');
-const { v4: uuidv4 } = require('uuid');
 
 // Mocking the Address model
 jest.mock('../models/Address');
 
-describe('AddressController', () => {
+describe('Address Controller', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     // Test address controller
-    it('should return a generated address with UUID', () => {
-        const mockAddress = {
-            id: uuidv4(),
-            address: "1234 Elm Street"
-        };
-        Address.mockImplementation(() => {
-            return mockAddress;
-        });
+    it('should return a random address with UUID', async () => {
+        const req = mockRequest();
+        const res = mockResponse();
 
-        const req = {};
-        const res = {
-            json: jest.fn()
-        };
+        const address = { id: '1255e52c-9dab-4791-b8b7-35b3ea8ab69e', address: '1234 Elm Street' };
+        Address.findOne.mockResolvedValue(address);
+    
+        await getAddress(req, res);
 
-        getAddress(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(address);
+    });
 
-        expect(res.json).toHaveBeenCalledWith(mockAddress);
-        expect(res.json).toHaveBeenCalledTimes(1);
+    // Test for error handling when no address is found
+    it('should return 404 if no address found', async () => {
+        const req = mockRequest();
+        const res = mockResponse();
+
+        Address.findOne.mockResolvedValue(null);
+
+        await getAddress(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ error: 'No address found' });
     });
 });

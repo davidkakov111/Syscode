@@ -1,5 +1,12 @@
 FROM node:22-bullseye
 
+# Install Liquibase
+RUN apt-get update && \
+    apt-get install -y wget openjdk-11-jdk && \
+    wget https://github.com/liquibase/liquibase/releases/download/v4.16.0/liquibase-4.16.0.tar.gz && \
+    tar -xzf liquibase-4.16.0.tar.gz && \
+    mv liquibase /usr/local/bin
+
 # Set working directory
 WORKDIR /usr/src/app
 
