@@ -33,3 +33,17 @@ button {
 .nav-buttons .hover-blue {
     color: var(--hover-blue);
 }
+@media (max-width: 650px) {
+    .logo {
+        display: none;
+    }
+
+    .nav-buttons  {
+        width: 100%;
+    }
+
+    .nav-buttons button  {
+        margin: 0 auto;
+        font-size: medium;
+    }
+}
